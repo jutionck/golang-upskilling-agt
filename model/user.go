@@ -1,23 +1,28 @@
-// harus sama seperti nama folder dia berada
 package model
 
-type UserModel interface {
-	IsRole() bool
-}
+import validation "github.com/go-ozzo/ozzo-validation"
 
-// kalo mau digunakan secara luas atau beda package: main, model, repo itu harus di awali dengan huruf besar (awalnya aja)
 type User struct {
-	Id       string
-	Username string
-	Password string
-	Role     string
+	Id         string
+	Username   string
+	Password   string
+	Role       string
+	ResetToken string
+	IsActive   string
 }
 
-// method
-// tidak bisa langsung di panggil harus melalui struct nya
-// atau bisa lewat interface
-func (u User) IsRole() bool {
-	return u.Role == "admin" || u.Role == "staff"
+// Optional, cuma kalo mau mudah validasi struct bisa menggunakan -> ozzo validation golang
+func (u User) IsValidField() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Username, validation.Required, validation.Length(3, 50)),
+		validation.Field(&u.Password, validation.Required, validation.Length(5, 50)),
+	)
 }
 
-func IsRole() {}
+func (u User) IsValidRole() bool {
+	return u.Role == "admin" || u.Role == "user"
+}
+
+func (u User) IsValidUserActive() bool {
+	return u.IsActive == "incative" || u.IsActive == "active" || u.IsActive == "created"
+}
