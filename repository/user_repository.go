@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/jutionck/golang-upskilling-agt/config/db"
 	"github.com/jutionck/golang-upskilling-agt/model"
 )
 
@@ -23,18 +24,30 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	db *sql.DB
+	db *db.Queries
 }
 
 // Create implements UserRepository.
 func (u *userRepository) Create(payload model.User) error {
-	_, err := u.db.ExecContext(context.Background(), "INSERT INTO mst_user (id, username, password, role, is_active) VALUES ($1, $2, $3, $4, $5)",
-		payload.Id,
-		payload.Username,
-		payload.Password,
-		payload.Role,
-		payload.IsActive,
-	)
+	err := u.db.CreateUser(context.Background(), db.CreateUserParams{
+		ID: payload.Id,
+		Username: sql.NullString{
+			String: payload.Username,
+			Valid:  true,
+		},
+		Password: sql.NullString{
+			String: payload.Password,
+			Valid:  true,
+		},
+		Role: sql.NullString{
+			String: payload.Role,
+			Valid:  true,
+		},
+		IsActive: sql.NullString{
+			String: payload.IsActive,
+			Valid:  true,
+		},
+	})
 
 	if err != nil {
 		return err
@@ -45,27 +58,71 @@ func (u *userRepository) Create(payload model.User) error {
 
 // Delete implements UserRepository.
 func (u *userRepository) Delete(id string) error {
-	panic("unimplemented")
+	return u.db.DeleteUser(context.Background(), id)
 }
 
 // Get implements UserRepository.
 func (u *userRepository) Get(id string) (model.User, error) {
-	panic("unimplemented")
+	user, err := u.db.GetUser(context.Background(), id)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	ur := model.User{
+		Id:       user.ID,
+		Username: user.Username.String,
+		Role:     user.Role.String,
+		IsActive: user.IsActive.String,
+	}
+
+	return ur, nil
 }
 
 // List implements UserRepository.
 func (u *userRepository) List() ([]model.User, error) {
-	panic("unimplemented")
+	users, err := u.db.ListUser(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var ur []model.User
+
+	for _, v := range users {
+		ur = append(ur, model.User{
+			Id:       v.ID,
+			Username: v.Username.String,
+			Role:     v.Role.String,
+			IsActive: v.IsActive.String,
+		})
+	}
+
+	return ur, nil
 }
 
 // Update implements UserRepository.
 func (u *userRepository) Update(payload model.User) error {
-	panic("unimplemented")
+	return u.db.UpdateUser(context.Background(), db.UpdateUserParams{
+		ID: payload.Id,
+		Username: sql.NullString{
+			String: payload.Username,
+			Valid:  true,
+		},
+		Password: sql.NullString{
+			String: payload.Password,
+			Valid:  true,
+		},
+		Role: sql.NullString{
+			String: payload.Role,
+			Valid:  true,
+		},
+		IsActive: sql.NullString{
+			String: payload.IsActive,
+			Valid:  true,
+		},
+	})
 }
 
-// INSERT, SELECT, UPDATE, DELETE
-
 // class = new Class()
-func NewUserRepository(db *sql.DB) UserRepository {
+func NewUserRepository(db *db.Queries) UserRepository {
 	return &userRepository{db: db}
 }

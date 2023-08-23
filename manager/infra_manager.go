@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jutionck/golang-upskilling-agt/config"
+	"github.com/jutionck/golang-upskilling-agt/config/db"
 	_ "github.com/lib/pq"
 )
 
@@ -12,11 +13,11 @@ import (
 // func init() {}
 
 type InfraManager interface {
-	Conn() *sql.DB
+	Conn() *db.Queries
 }
 
 type infraManager struct {
-	db  *sql.DB
+	db  *db.Queries
 	cfg *config.Config
 }
 
@@ -30,16 +31,16 @@ func (i *infraManager) initDb() error {
 		i.cfg.Name,
 	)
 
-	db, err := sql.Open(i.cfg.Driver, dsn)
+	dbConn, err := sql.Open(i.cfg.Driver, dsn)
 	if err != nil {
 		return err
 	}
 
-	i.db = db
+	i.db = db.New(dbConn)
 	return nil
 }
 
-func (i *infraManager) Conn() *sql.DB {
+func (i *infraManager) Conn() *db.Queries {
 	return i.db
 }
 
