@@ -24,7 +24,7 @@ func (u *userUseCase) DeleteUser(id string) error {
 
 // FindAllUser implements UserUseCase.
 func (u *userUseCase) FindAllUser() ([]model.User, error) {
-	panic("unimplemented")
+	return u.repo.List()
 }
 
 // FindByUserId implements UserUseCase.

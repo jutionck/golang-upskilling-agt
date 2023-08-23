@@ -3,12 +3,12 @@ package model
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type User struct {
-	Id         string
-	Username   string
-	Password   string
-	Role       string
-	ResetToken string
-	IsActive   string
+	Id         string `json:"id"`
+	Username   string `json:"username"`
+	Password   string `json:"password,omitempty"`
+	Role       string `json:"role"`
+	ResetToken string `json:"resetToken,omitempty"`
+	IsActive   string `json:"isActive"`
 }
 
 // Optional, cuma kalo mau mudah validasi struct bisa menggunakan -> ozzo validation golang

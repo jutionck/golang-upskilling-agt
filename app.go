@@ -1,43 +1,9 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/google/uuid"
-	"github.com/jutionck/golang-upskilling-agt/config"
-	"github.com/jutionck/golang-upskilling-agt/manager"
-	"github.com/jutionck/golang-upskilling-agt/model"
-	"github.com/jutionck/golang-upskilling-agt/repository"
-	"github.com/jutionck/golang-upskilling-agt/usecase"
-)
+import "github.com/jutionck/golang-upskilling-agt/delivery"
 
 func main() {
-
-	cfg, err := config.NewConfig()
-	if err != nil {
-		panic(err)
-	}
-
-	infraManager, err := manager.NewInfraManager(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	// repo
-	ur := repository.NewUserRepository(infraManager.Conn())
-	uUc := usecase.NewUserUseCase(ur)
-
-	newUser := model.User{
-		Id:       uuid.New().String(),
-		Username: "admin",
-		Password: "password",
-		Role:     "admin",
-		IsActive: "active",
-	}
-
-	if err := uUc.RegisterNewUser(newUser); err != nil {
-		fmt.Println(err)
-	}
+	delivery.NewServer().Run()
 }
 
 // Native (package diluar built-in)

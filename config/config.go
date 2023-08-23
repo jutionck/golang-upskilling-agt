@@ -2,6 +2,11 @@ package config
 
 import "github.com/jutionck/golang-upskilling-agt/utils"
 
+type ApiConfig struct {
+	ApiHost string
+	ApiPort string
+}
+
 type DBConfig struct {
 	Host     string
 	Port     string
@@ -13,6 +18,7 @@ type DBConfig struct {
 
 type Config struct {
 	DBConfig
+	ApiConfig
 }
 
 func (c *Config) ReadConfig() error {
@@ -31,6 +37,11 @@ func (c *Config) ReadConfig() error {
 		Password: vp.GetEnv("DB_PASSWORD", "P@ssw0rd"),
 		User:     vp.GetEnv("DB_USER", "postgres"),
 		Driver:   vp.GetEnv("DB_DRIVER", "postgres"),
+	}
+
+	c.ApiConfig = ApiConfig{
+		ApiHost: vp.GetEnv("API_HOST", "localhost"),
+		ApiPort: vp.GetEnv("API_PORT", "8888"),
 	}
 
 	// UNCOMMENT: jika menggunakan godotenv
