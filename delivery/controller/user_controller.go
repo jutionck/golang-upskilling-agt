@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/jutionck/golang-upskilling-agt/model"
 	"github.com/jutionck/golang-upskilling-agt/usecase"
 )
@@ -21,8 +20,7 @@ func (u *UserController) createHandler(c *gin.Context) {
 		return
 	}
 
-	payload.Id = uuid.New().String()
-	if err := u.uc.RegisterNewUser(payload); err != nil {
+	if err := u.uc.RegisterNewUser(&payload); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

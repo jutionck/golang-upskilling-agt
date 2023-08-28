@@ -1,23 +1,20 @@
 package manager
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/jutionck/golang-upskilling-agt/config"
-	"github.com/jutionck/golang-upskilling-agt/config/db"
-	_ "github.com/lib/pq"
+	"github.com/jutionck/golang-upskilling-agt/model"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-// // akan otomatis terpanggil jika package dia di import
-// func init() {}
-
 type InfraManager interface {
-	Conn() *db.Queries
+	Conn() *gorm.DB
 }
 
 type infraManager struct {
-	db  *db.Queries
+	db  *gorm.DB
 	cfg *config.Config
 }
 
@@ -31,16 +28,23 @@ func (i *infraManager) initDb() error {
 		i.cfg.Name,
 	)
 
-	dbConn, err := sql.Open(i.cfg.Driver, dsn)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	i.db = db.New(dbConn)
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Employee{},
+	); err != nil {
+		return err
+	}
+
+	i.db = db
 	return nil
 }
 
-func (i *infraManager) Conn() *db.Queries {
+func (i *infraManager) Conn() *gorm.DB {
 	return i.db
 }
 

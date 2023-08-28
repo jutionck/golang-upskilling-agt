@@ -3,7 +3,7 @@ package model
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type User struct {
-	Id         string `json:"id"`
+	BaseModel
 	Username   string `json:"username"`
 	Password   string `json:"password,omitempty"`
 	Role       string `json:"role"`

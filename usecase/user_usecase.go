@@ -6,10 +6,10 @@ import (
 )
 
 type UserUseCase interface {
-	RegisterNewUser(payload model.User) error
+	RegisterNewUser(payload *model.User) error
 	FindAllUser() ([]model.User, error)
 	FindByUserId(id string) (model.User, error)
-	UpdateUser(payload model.User) error
+	UpdateUser(payload *model.User) error
 	DeleteUser(id string) error
 }
 
@@ -33,7 +33,7 @@ func (u *userUseCase) FindByUserId(id string) (model.User, error) {
 }
 
 // RegisterNewUser implements UserUseCase.
-func (u *userUseCase) RegisterNewUser(payload model.User) error {
+func (u *userUseCase) RegisterNewUser(payload *model.User) error {
 	payload.IsValidField()
 
 	// if payload.Username == "" || payload.Password == "" {
@@ -44,7 +44,7 @@ func (u *userUseCase) RegisterNewUser(payload model.User) error {
 }
 
 // UpdateUser implements UserUseCase.
-func (u *userUseCase) UpdateUser(payload model.User) error {
+func (u *userUseCase) UpdateUser(payload *model.User) error {
 	panic("unimplemented")
 }
 
