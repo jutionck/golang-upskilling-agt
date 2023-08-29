@@ -33,14 +33,24 @@ func (i *infraManager) initDb() error {
 		return err
 	}
 
-	if err := db.AutoMigrate(
-		&model.User{},
-		&model.Employee{},
-	); err != nil {
-		return err
+	// initial db
+	i.db = db
+
+	// Ini dijalankan hanya 1x saja atau jika ada perubahan
+	if i.cfg.FileConfig.Env == "migration" {
+		i.db = db.Debug()
+		if err := db.AutoMigrate(
+			&model.User{},
+			&model.Employee{},
+		); err != nil {
+			return err
+		}
+	} else if i.cfg.FileConfig.Env == "dev" {
+		i.db = db.Debug()
+	} else {
+		// konfigurasi lainnya
 	}
 
-	i.db = db
 	return nil
 }
 

@@ -1,6 +1,10 @@
 package config
 
-import "github.com/jutionck/golang-upskilling-agt/utils"
+import (
+	"fmt"
+
+	"github.com/jutionck/golang-upskilling-agt/utils"
+)
 
 type ApiConfig struct {
 	ApiHost string
@@ -16,9 +20,14 @@ type DBConfig struct {
 	Driver   string
 }
 
+type FileConfig struct {
+	Env string
+}
+
 type Config struct {
 	DBConfig
 	ApiConfig
+	FileConfig
 }
 
 func (c *Config) ReadConfig() error {
@@ -44,6 +53,10 @@ func (c *Config) ReadConfig() error {
 		ApiPort: vp.GetEnv("API_PORT", "8888"),
 	}
 
+	c.FileConfig = FileConfig{
+		Env: vp.GetEnv("MIGRATION", "dev"),
+	}
+
 	// UNCOMMENT: jika menggunakan godotenv
 	// err := godotenv.Load("environment/.env")
 	// if err != nil {
@@ -58,6 +71,12 @@ func (c *Config) ReadConfig() error {
 	// 	User:     os.Getenv("DB_USER"),
 	// 	Driver:   os.Getenv("DB_DRIVER"),
 	// }
+
+	if c.DBConfig.Host == "" || c.DBConfig.Port == "" ||
+		c.DBConfig.Name == "" || c.DBConfig.User == "" || c.DBConfig.Password == "" ||
+		c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" || c.FileConfig.Env == "" {
+		return fmt.Errorf("missing required environment variables")
+	}
 
 	return nil
 }
