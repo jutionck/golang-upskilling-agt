@@ -21,7 +21,8 @@ type DBConfig struct {
 }
 
 type FileConfig struct {
-	Env string
+	Env      string
+	FilePath string
 }
 
 type Config struct {
@@ -54,7 +55,8 @@ func (c *Config) ReadConfig() error {
 	}
 
 	c.FileConfig = FileConfig{
-		Env: vp.GetEnv("MIGRATION", "dev"),
+		Env:      vp.GetEnv("MIGRATION", "dev"),
+		FilePath: vp.GetEnv("FILE_PATH", "logger.log"),
 	}
 
 	// UNCOMMENT: jika menggunakan godotenv
@@ -74,7 +76,8 @@ func (c *Config) ReadConfig() error {
 
 	if c.DBConfig.Host == "" || c.DBConfig.Port == "" ||
 		c.DBConfig.Name == "" || c.DBConfig.User == "" || c.DBConfig.Password == "" ||
-		c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" || c.FileConfig.Env == "" {
+		c.ApiConfig.ApiHost == "" || c.ApiConfig.ApiPort == "" || c.FileConfig.Env == "" ||
+		c.FileConfig.FilePath == "" {
 		return fmt.Errorf("missing required environment variables")
 	}
 

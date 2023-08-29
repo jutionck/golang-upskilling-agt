@@ -1,0 +1,8 @@
+time="2023-08-29T20:53:52+07:00" level=info msg="{GET 200 127.0.0.1 /api/v1/users PostmanRuntime/7.32.1}" message="Request Log"
+time="2023-08-29T20:53:52+07:00" level=info msg="{<nil> 200 []}" message="Response Log"
+time="2023-08-29T20:54:08+07:00" level=error msg="{GET 404 127.0.0.1 /api/v1/usersddd PostmanRuntime/7.32.1}" message="Request Log"
+time="2023-08-29T20:54:08+07:00" level=error msg="{<nil> 404 []}" message="Response Log"
+time="2023-08-29T20:58:09+07:00" level=error msg="{GET 404 127.0.0.1 /api/v1/usersddd PostmanRuntime/7.32.1}" message="Request Log"
+time="2023-08-29T20:58:09+07:00" level=error msg="{0xc0001d6100 404 []}" message="Response Log"
+time="2023-08-29T20:58:21+07:00" level=info msg="{GET 200 127.0.0.1 /api/v1/users PostmanRuntime/7.32.1}" message="Request Log"
+time="2023-08-29T20:58:21+07:00" level=info msg="{0xc0001d6100 200 []}" message="Response Log"
