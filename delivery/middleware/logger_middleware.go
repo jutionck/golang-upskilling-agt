@@ -22,6 +22,7 @@ func (l *logMiddleware) Logger() gin.HandlerFunc {
 	}
 
 	return func(ctx *gin.Context) {
+		responseWriter := modelutil.NewResponseLog(ctx.Writer)
 		requestLog := modelutil.RequestLog{
 			Method:     ctx.Request.Method,
 			StatusCode: ctx.Writer.Status(),
@@ -30,14 +31,14 @@ func (l *logMiddleware) Logger() gin.HandlerFunc {
 			UserAgent:  ctx.Request.UserAgent(),
 		}
 
-		responseLog := modelutil.ResponseLog{
-			ResponseWriter: ctx.Writer,
-			StatusCode:     ctx.Writer.Status(),
-		}
-
 		// Untuk proses request seterusnya
-		ctx.Writer = responseLog.ResponseWriter
+		ctx.Writer = responseWriter
 		ctx.Next()
+
+		responseLog := modelutil.ResponseLog{
+			StatusCode:   responseWriter.Status(),
+			ResponseBody: responseWriter.Body(),
+		}
 
 		switch {
 		case ctx.Writer.Status() >= 400:
