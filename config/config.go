@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jutionck/golang-upskilling-agt/utils"
 )
 
@@ -25,10 +28,18 @@ type FileConfig struct {
 	FilePath string
 }
 
+type JwtConfig struct {
+	ApplicationName  string
+	JwtSignatureKey  []byte
+	JwtSigningMethod *jwt.SigningMethodHMAC
+	JwtLifeTime      time.Duration
+}
+
 type Config struct {
 	DBConfig
 	ApiConfig
 	FileConfig
+	JwtConfig
 }
 
 func (c *Config) ReadConfig() error {
@@ -57,6 +68,13 @@ func (c *Config) ReadConfig() error {
 	c.FileConfig = FileConfig{
 		Env:      vp.GetEnv("MIGRATION", "dev"),
 		FilePath: vp.GetEnv("FILE_PATH", "logger.log"),
+	}
+	jwtLifeTime, _ := strconv.Atoi(vp.GetEnv("TOKEN_EXPIRES", "5"))
+	c.JwtConfig = JwtConfig{
+		ApplicationName:  vp.GetEnv("TOKEN_NAME", "ENIGMA"),
+		JwtSignatureKey:  []byte(vp.GetEnv("TOKEN_KEY", "xxxxxxxx")),
+		JwtSigningMethod: jwt.SigningMethodHS256,
+		JwtLifeTime:      time.Duration(jwtLifeTime) * time.Minute,
 	}
 
 	// UNCOMMENT: jika menggunakan godotenv
