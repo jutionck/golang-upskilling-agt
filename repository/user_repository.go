@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/jutionck/golang-upskilling-agt/model"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +14,8 @@ type UserRepository interface {
 	Get(id string) (model.User, error)
 	Update(payload *model.User) error
 	Delete(id string) error
+	GetByUsername(username string) (model.User, error)
+	GetByUsernamePassword(username string, password string) (model.User, error)
 }
 
 type userRepository struct {
@@ -63,6 +68,28 @@ func (u *userRepository) Update(payload *model.User) error {
 	}
 
 	return nil
+}
+
+func (u *userRepository) GetByUsername(username string) (model.User, error) {
+	var user model.User
+	result := u.db.Where("username = ?", username).First(&user).Error
+	if result != nil {
+		return model.User{}, result
+	}
+	return user, nil
+
+}
+
+func (u *userRepository) GetByUsernamePassword(username string, password string) (model.User, error) {
+	user, err := u.GetByUsername(username)
+	if err != nil {
+		return model.User{}, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return model.User{}, fmt.Errorf("failed to verify password hash : %v", err)
+	}
+	return user, nil
 }
 
 // class = new Class()

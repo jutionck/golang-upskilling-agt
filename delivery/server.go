@@ -8,12 +8,14 @@ import (
 	"github.com/jutionck/golang-upskilling-agt/delivery/controller"
 	"github.com/jutionck/golang-upskilling-agt/delivery/middleware"
 	"github.com/jutionck/golang-upskilling-agt/manager"
+	"github.com/jutionck/golang-upskilling-agt/usecase"
 	loggerutil "github.com/jutionck/golang-upskilling-agt/utils/logger_util"
 	"github.com/jutionck/golang-upskilling-agt/utils/service"
 )
 
 type Server struct {
 	uc            manager.UseCaseManager
+	authService   usecase.AuthUseCase
 	engine        *gin.Engine
 	loggerService loggerutil.LoggerUtil
 	jwtService    service.JwtService
@@ -25,6 +27,7 @@ func (s *Server) setupControllers() {
 	// semua controller di taruh disini
 	authMiddleware := middleware.NewAuthMiddleware(s.jwtService)
 	controller.NewUserController(s.uc.UserUseCase(), s.engine, authMiddleware)
+	controller.NewAuthController(s.engine, s.authService)
 }
 
 func (s *Server) Run() {
@@ -50,12 +53,14 @@ func NewServer() *Server {
 	engine := gin.Default()
 	loggerService := loggerutil.NewLoggerUtil(cfg.FileConfig)
 	jwtService := service.NewJwtService(cfg.JwtConfig)
+	authUseCase := usecase.NewAuthUseCase(uUc.UserUseCase(), jwtService)
 	host := fmt.Sprintf("%s:%s", cfg.ApiHost, cfg.ApiPort)
 	return &Server{
 		uc:            uUc,
 		engine:        engine,
 		loggerService: loggerService,
 		jwtService:    jwtService,
+		authService:   authUseCase,
 		host:          host,
 	}
 }
