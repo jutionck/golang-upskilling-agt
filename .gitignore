@@ -1,3 +1,5 @@
 .env
 environment/*.env
 logger.log
+app
+docs/

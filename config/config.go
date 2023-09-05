@@ -44,7 +44,6 @@ type Config struct {
 
 func (c *Config) ReadConfig() error {
 
-	// COMMENT: jika menggunakan godotenv
 	vp := utils.NewViperUtil("environment", "dev", "env")
 	err := vp.LoadEnv()
 	if err != nil {
@@ -76,21 +75,6 @@ func (c *Config) ReadConfig() error {
 		JwtSigningMethod: jwt.SigningMethodHS256,
 		JwtLifeTime:      time.Duration(jwtLifeTime) * time.Minute,
 	}
-
-	// UNCOMMENT: jika menggunakan godotenv
-	// err := godotenv.Load("environment/.env")
-	// if err != nil {
-	// 	return fmt.Errorf("fatal error config file: %w", err)
-	// }
-
-	// c.DBConfig = DBConfig{
-	// 	Host:     os.Getenv("DB_HOST"),
-	// 	Port:     os.Getenv("DB_PORT"),
-	// 	Name:     os.Getenv("DB_NAME"),
-	// 	Password: os.Getenv("DB_PASSWORD"),
-	// 	User:     os.Getenv("DB_USER"),
-	// 	Driver:   os.Getenv("DB_DRIVER"),
-	// }
 
 	if c.DBConfig.Host == "" || c.DBConfig.Port == "" ||
 		c.DBConfig.Name == "" || c.DBConfig.User == "" || c.DBConfig.Password == "" ||

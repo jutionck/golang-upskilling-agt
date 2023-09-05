@@ -7,10 +7,13 @@ import (
 	"github.com/jutionck/golang-upskilling-agt/config"
 	"github.com/jutionck/golang-upskilling-agt/delivery/controller"
 	"github.com/jutionck/golang-upskilling-agt/delivery/middleware"
+	"github.com/jutionck/golang-upskilling-agt/docs"
 	"github.com/jutionck/golang-upskilling-agt/manager"
 	"github.com/jutionck/golang-upskilling-agt/usecase"
 	loggerutil "github.com/jutionck/golang-upskilling-agt/utils/logger_util"
 	"github.com/jutionck/golang-upskilling-agt/utils/service"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Server struct {
@@ -26,12 +29,21 @@ func (s *Server) setupControllers() {
 	s.engine.Use(middleware.NewLogMiddleware(s.loggerService).Logger())
 	// semua controller di taruh disini
 	authMiddleware := middleware.NewAuthMiddleware(s.jwtService)
-	controller.NewUserController(s.uc.UserUseCase(), s.engine, authMiddleware)
-	controller.NewAuthController(s.engine, s.authService)
+	controller.NewUserController(s.uc.UserUseCase(), s.engine, authMiddleware).Route()
+	controller.NewAuthController(s.engine, s.authService).Route()
+}
+
+func (s *Server) swageDocs() {
+	docs.SwaggerInfo.Title = "UPSKILLING GOLANG"
+	docs.SwaggerInfo.Version = "v1"
+	docs.SwaggerInfo.Host = "localhost:8888"
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
 
 func (s *Server) Run() {
 	s.setupControllers()
+	s.swageDocs()
 	if err := s.engine.Run(s.host); err != nil {
 		panic(fmt.Errorf("server not running %s", err.Error()))
 	}

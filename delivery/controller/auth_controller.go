@@ -13,6 +13,15 @@ type AuthController struct {
 	uc     usecase.AuthUseCase
 }
 
+// Login godoc
+// @Summary Login a user
+// @Description Login a user
+// @Accept json
+// @Produce json
+// @Tags Auth
+// @Param Body body dto.Auth true "Login"
+// @Success 201 {object} string
+// @Router /auth/login [post]
 func (a *AuthController) loginHandler(c *gin.Context) {
 	var payload model.User
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -27,12 +36,11 @@ func (a *AuthController) loginHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"data": token})
 }
 
+func (a *AuthController) Route() {
+	rg := a.router.Group("/api/v1")
+	rg.POST("/auth/login", a.loginHandler)
+}
+
 func NewAuthController(r *gin.Engine, uc usecase.AuthUseCase) *AuthController {
-	controller := AuthController{
-		router: r,
-		uc:     uc,
-	}
-	rg := r.Group("/api/v1")
-	rg.POST("/auth/login", controller.loginHandler)
-	return &controller
+	return &AuthController{router: r, uc: uc}
 }
